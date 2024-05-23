@@ -73,7 +73,7 @@
             </font>
            </property>
            <property name="text">
-            <string>Левое переднее крыло</string>
+            <string>Левое крыло</string>
            </property>
            <property name="alignment">
             <set>Qt::AlignCenter</set>
@@ -206,7 +206,7 @@
             </font>
            </property>
            <property name="text">
-            <string>Правое переднее крыло</string>
+            <string>Правое крыло</string>
            </property>
            <property name="alignment">
             <set>Qt::AlignCenter</set>
@@ -339,7 +339,7 @@
             </font>
            </property>
            <property name="text">
-            <string>Левое заднее крыло</string>
+            <string>Левый стабилизатор</string>
            </property>
            <property name="alignment">
             <set>Qt::AlignCenter</set>
@@ -472,7 +472,7 @@
             </font>
            </property>
            <property name="text">
-            <string>Левое заднее крыло</string>
+            <string>Правый стабилизатор</string>
            </property>
            <property name="alignment">
             <set>Qt::AlignCenter</set>
