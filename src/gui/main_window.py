@@ -3,10 +3,10 @@ from .ui_main_window import Ui_MainWindow
 
 from PyQt5.QtWidgets import QMainWindow
 
-LEFT_WING_PORT = 32001
+LEFT_WING_PORT = 32105
 RIGHT_WING_PORT = LEFT_WING_PORT + 1
-LEFT_STABILIZER = RIGHT_WING_PORT + 1
-RIGHT_STABILIZER = LEFT_STABILIZER + 1
+LEFT_STABILIZER_PORT = RIGHT_WING_PORT + 1
+RIGHT_STABILIZER_PORT = LEFT_STABILIZER_PORT + 1
 
 
 class MainWindow(QMainWindow):
@@ -16,8 +16,8 @@ class MainWindow(QMainWindow):
         self._ui.setupUi(self)
         self.left_wing_server = BaseServer(LEFT_WING_PORT, "Left Wing Server")
         self.right_wing_server = BaseServer(RIGHT_WING_PORT, "Right Wing Server")
-        self.left_stabilizer_server = BaseServer(LEFT_STABILIZER, "Left Stabilizer Server")
-        self.right_stabilizer_server = BaseServer(RIGHT_STABILIZER, "Right Stabilizer Server")
+        self.left_stabilizer_server = BaseServer(LEFT_STABILIZER_PORT, "Left Stabilizer Server")
+        self.right_stabilizer_server = BaseServer(RIGHT_STABILIZER_PORT, "Right Stabilizer Server")
         
         self.left_wing_server.start_server_thread()
         self.right_wing_server.start_server_thread()
