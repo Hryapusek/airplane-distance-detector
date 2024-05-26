@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>928</width>
-    <height>207</height>
+    <height>217</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -81,7 +81,7 @@
           </widget>
          </item>
          <item>
-          <widget class="QPushButton" name="pushButton">
+          <widget class="QPushButton" name="lw_1m_btn">
            <property name="minimumSize">
             <size>
              <width>0</width>
@@ -99,7 +99,7 @@
           </widget>
          </item>
          <item>
-          <widget class="QPushButton" name="pushButton_2">
+          <widget class="QPushButton" name="lw_2m_btn">
            <property name="minimumSize">
             <size>
              <width>0</width>
@@ -117,7 +117,7 @@
           </widget>
          </item>
          <item>
-          <widget class="QPushButton" name="pushButton_3">
+          <widget class="QPushButton" name="lw_3m_btn">
            <property name="minimumSize">
             <size>
              <width>0</width>
@@ -135,7 +135,7 @@
           </widget>
          </item>
          <item>
-          <widget class="QPushButton" name="pushButton_4">
+          <widget class="QPushButton" name="lw_safe_btn">
            <property name="minimumSize">
             <size>
              <width>0</width>
@@ -214,7 +214,7 @@
           </widget>
          </item>
          <item>
-          <widget class="QPushButton" name="pushButton_5">
+          <widget class="QPushButton" name="rw_1m_btn">
            <property name="minimumSize">
             <size>
              <width>0</width>
@@ -232,7 +232,7 @@
           </widget>
          </item>
          <item>
-          <widget class="QPushButton" name="pushButton_6">
+          <widget class="QPushButton" name="rw_2m_btn">
            <property name="minimumSize">
             <size>
              <width>0</width>
@@ -250,7 +250,7 @@
           </widget>
          </item>
          <item>
-          <widget class="QPushButton" name="pushButton_7">
+          <widget class="QPushButton" name="rw_3m_btn">
            <property name="minimumSize">
             <size>
              <width>0</width>
@@ -268,7 +268,7 @@
           </widget>
          </item>
          <item>
-          <widget class="QPushButton" name="pushButton_8">
+          <widget class="QPushButton" name="rw_safe_btn">
            <property name="minimumSize">
             <size>
              <width>0</width>
@@ -347,7 +347,7 @@
           </widget>
          </item>
          <item>
-          <widget class="QPushButton" name="pushButton_9">
+          <widget class="QPushButton" name="ls_1m_btn">
            <property name="minimumSize">
             <size>
              <width>0</width>
@@ -365,7 +365,7 @@
           </widget>
          </item>
          <item>
-          <widget class="QPushButton" name="pushButton_10">
+          <widget class="QPushButton" name="ls_2m_btn">
            <property name="minimumSize">
             <size>
              <width>0</width>
@@ -383,7 +383,7 @@
           </widget>
          </item>
          <item>
-          <widget class="QPushButton" name="pushButton_11">
+          <widget class="QPushButton" name="ls_3m_btn">
            <property name="minimumSize">
             <size>
              <width>0</width>
@@ -401,7 +401,7 @@
           </widget>
          </item>
          <item>
-          <widget class="QPushButton" name="pushButton_12">
+          <widget class="QPushButton" name="ls_safe_btn">
            <property name="minimumSize">
             <size>
              <width>0</width>
@@ -480,7 +480,7 @@
           </widget>
          </item>
          <item>
-          <widget class="QPushButton" name="pushButton_13">
+          <widget class="QPushButton" name="rs_1m_btn">
            <property name="minimumSize">
             <size>
              <width>0</width>
@@ -498,7 +498,7 @@
           </widget>
          </item>
          <item>
-          <widget class="QPushButton" name="pushButton_14">
+          <widget class="QPushButton" name="rs_2m_btn">
            <property name="minimumSize">
             <size>
              <width>0</width>
@@ -516,7 +516,7 @@
           </widget>
          </item>
          <item>
-          <widget class="QPushButton" name="pushButton_15">
+          <widget class="QPushButton" name="rs_3m_btn">
            <property name="minimumSize">
             <size>
              <width>0</width>
@@ -534,7 +534,7 @@
           </widget>
          </item>
          <item>
-          <widget class="QPushButton" name="pushButton_16">
+          <widget class="QPushButton" name="rs_safe_btn">
            <property name="minimumSize">
             <size>
              <width>0</width>
