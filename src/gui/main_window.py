@@ -12,6 +12,7 @@ M1_COLOR = "red"
 M2_COLOR = "orange"
 M3_COLOR = "yellow"
 SAFE_COLOR = "green"
+SAFE_TEXT_COLOR = "white"
 
 
 class MainWindow(QMainWindow):
@@ -55,7 +56,10 @@ class MainWindow(QMainWindow):
         self.rs_safe_btn_clicked()
 
     def set_button_color(self, btn: QPushButton, color: str):
-        btn.setStyleSheet(f"background-color: {color}")
+        btn.setStyleSheet(btn.styleSheet() + f"background-color: {color};")
+
+    def set_button_text_color(self, btn: QPushButton, color: str):
+        btn.setStyleSheet(btn.styleSheet() + f"color: {color};")
 
     def rw_clear_colors(self):
         self._ui.rw_1m_btn.setStyleSheet(None)
@@ -103,6 +107,7 @@ class MainWindow(QMainWindow):
         self.left_wing_server.set_distance(100)
         self.lw_clear_colors()
         self.set_button_color(self._ui.lw_safe_btn, SAFE_COLOR)
+        self.set_button_text_color(self._ui.lw_safe_btn, SAFE_TEXT_COLOR)
         self.update()
 
 
@@ -128,6 +133,7 @@ class MainWindow(QMainWindow):
         self.right_wing_server.set_distance(100)
         self.rw_clear_colors()
         self.set_button_color(self._ui.rw_safe_btn, SAFE_COLOR)
+        self.set_button_text_color(self._ui.rw_safe_btn, SAFE_TEXT_COLOR)
         self.update()
 
 
@@ -153,6 +159,7 @@ class MainWindow(QMainWindow):
         self.left_stabilizer_server.set_distance(100)
         self.ls_clear_colors()
         self.set_button_color(self._ui.ls_safe_btn, SAFE_COLOR)
+        self.set_button_text_color(self._ui.ls_safe_btn, SAFE_TEXT_COLOR)
         self.update()
 
 
@@ -178,4 +185,5 @@ class MainWindow(QMainWindow):
         self.right_stabilizer_server.set_distance(100)
         self.rs_clear_colors()
         self.set_button_color(self._ui.rs_safe_btn, SAFE_COLOR)
+        self.set_button_text_color(self._ui.rs_safe_btn, SAFE_TEXT_COLOR)
         self.update()
