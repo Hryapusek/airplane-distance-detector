@@ -4,60 +4,60 @@ from loguru import logger
 
 from aiohttp import web
 
-# This server is used to immitate distance detector
+# Этот сервер используется для имитации детектора расстояния
 class BaseServer:
     def __init__(self, port: int, name: str = "Unknown") -> None:
-        # Initialize distance to 100
+        # Инициализируем расстояние до 100
         self.distance = 100
-        # Initialize server thread to None
+        # Инициализируем серверный поток до None
         self._server_thread = None
-        # Initialize server name
+        # Инициализируем имя сервера
         self.name = name
-        # Initialize server port
+        # Инициализируем порт сервера
         self.port = port
 
-    # Handle GET request
+    # Обрабатываем GET-запрос
     async def handle_get(self, request):
-        # Return JSON response with current distance
+        # Возвращаем JSON-ответ с текущим расстоянием
         return web.json_response({'distance': self.distance})
 
-    # Set distance
+    # Устанавливаем расстояние
     def set_distance(self, distance: int):
-        # Update current distance
+        # Обновляем текущее расстояние
         self.distance = distance
 
-    # Create server coroutine
+    # Создаем корутину сервера
     async def create_server_coroutine(self):
-        # Create web application
+        # Создаем веб-приложение
         app = web.Application()
-        # Add GET route for distance
+        # Добавляем GET-маршрут для расстояния
         app.router.add_get('/distance', self.handle_get)
  
-        # Create AppRunner
+        # Создаем AppRunner
         runner = web.AppRunner(app)
-        # Set up AppRunner
+        # Настраиваем AppRunner
         await runner.setup()
-        # Create TCPSite
+        # Создаем TCPSite
         site = web.TCPSite(runner, 'localhost', self.port)
-        # Start TCPSite
+        # Запускаем TCPSite
         await site.start()
-        # Log server start
+        # Логируем запуск сервера
         logger.info(f"Server {self.name} started at http://localhost:{self.port}")
 
-        # Run the server until it is stopped
+        # Запускаем сервер до его остановки
         try:
-            # Sleep for an hour
+            # Спим час
             while True:
                 await asyncio.sleep(3600)
         except asyncio.CancelledError:
-            # Handle cancelled error
+            # Обрабатываем ошибку отмены
             pass
 
-    # Start server thread
+    # Запускаем поток сервера
     def start_server_thread(self):
-        # Check if server thread is not already running
+        # Проверяем, что поток сервера не запущен ранее
         assert self._server_thread is None
-        # Create server thread
+        # Создаем поток сервера
         self._server_thread = threading.Thread(target=lambda: asyncio.run(self.create_server_coroutine()), daemon=True)
-        # Start server thread
+        # Запускаем поток сервера
         self._server_thread.start()

@@ -1,0 +1,680 @@
+src/servers/base_server.py
+--------------------
+import asyncio
+import threading
+from loguru import logger
+
+from aiohttp import web
+
+# Этот сервер используется для имитации детектора расстояния
+class BaseServer:
+    def __init__(self, port: int, name: str = "Unknown") -> None:
+        # Инициализируем расстояние до 100
+        self.distance = 100
+        # Инициализируем серверный поток до None
+        self._server_thread = None
+        # Инициализируем имя сервера
+        self.name = name
+        # Инициализируем порт сервера
+        self.port = port
+
+    # Обрабатываем GET-запрос
+    async def handle_get(self, request):
+        # Возвращаем JSON-ответ с текущим расстоянием
+        return web.json_response({'distance': self.distance})
+
+    # Устанавливаем расстояние
+    def set_distance(self, distance: int):
+        # Обновляем текущее расстояние
+        self.distance = distance
+
+    # Создаем корутину сервера
+    async def create_server_coroutine(self):
+        # Создаем веб-приложение
+        app = web.Application()
+        # Добавляем GET-маршрут для расстояния
+        app.router.add_get('/distance', self.handle_get)
+ 
+        # Создаем AppRunner
+        runner = web.AppRunner(app)
+        # Настраиваем AppRunner
+        await runner.setup()
+        # Создаем TCPSite
+        site = web.TCPSite(runner, 'localhost', self.port)
+        # Запускаем TCPSite
+        await site.start()
+        # Логируем запуск сервера
+        logger.info(f"Сервер {self.name} запущен по адресу http://localhost:{self.port}")
+
+        # Запускаем сервер до тех пор, пока он не будет остановлен
+        try:
+            # Спим час
+            while True:
+                await asyncio.sleep(3600)
+        except asyncio.CancelledError:
+            # Обрабатываем ошибку отмены
+            pass
+
+    # Запускаем серверный поток
+    def start_server_thread(self):
+        # Проверяем, что серверный поток не запущен ранее
+        assert self._server_thread is None
+        # Создаем серверный поток
+        self._server_thread = threading.Thread(target=lambda: asyncio.run(self.create_server_coroutine()), daemon=True)
+        # Запускаем серверный поток
+        self._server_thread.start()
+
+src/servers/__init__.py
+--------------------
+
+src/main.py
+--------------------
+# Импортируем необходимые модули
+import multiprocessing
+from PyQt5.QtWidgets import QApplication
+from gui.main_window import MainWindow
+
+# Определяем основную функцию
+def main():
+    # Поддержка заморозки для мультипроцессинга
+    multiprocessing.freeze_support()
+    # Создаем новое приложение
+    app = QApplication([])
+    # Создаем новое основное окно
+    widget = MainWindow()
+    # Показываем основное окно
+    widget.show()
+    # Запускаем приложение
+    app.exec_()
+
+# Проверяем, запущен ли сценарий напрямую
+if __name__ == "__main__":
+    # Вызываем основную функцию
+    main()
+
+src/gui/__init__.py
+--------------------
+
+src/gui/ui_main_window.py
+--------------------
+# -*- coding: utf-8 -*-
+
+# Реализация формы, сгенерированная из файла 'mainwindow.ui'
+#
+# Создана: PyQt5 UI code generator 5.15.10
+#
+# ПРЕДУПРЕЖДЕНИЕ: Любые ручные изменения, внесенные в этот файл, будут потеряны, когда pyuic5 будет запущен снова.  Не редактируйте этот файл, если вы не знаете, что делаете.
+
+
+from PyQt5 import QtCore, QtGui, QtWidgets
+
+
+class Ui_MainWindow(object):
+    def setupUi(self, MainWindow):
+        MainWindow.setObjectName("MainWindow")
+        MainWindow.resize(1081, 207)
+        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Fixed, QtWidgets.QSizePolicy.Fixed)
+        sizePolicy.setHorizontalStretch(0)
+        sizePolicy.setVerticalStretch(0)
+        sizePolicy.setHeightForWidth(MainWindow.sizePolicy().hasHeightForWidth())
+        MainWindow.setSizePolicy(sizePolicy)
+        MainWindow.setStyleSheet("")
+        self.centralwidget = QtWidgets.QWidget(MainWindow)
+        self.centralwidget.setObjectName("centralwidget")
+        self.horizontalLayout = QtWidgets.QHBoxLayout(self.centralwidget)
+        self.horizontalLayout.setObjectName("horizontalLayout")
+        self.frame = QtWidgets.QFrame(self.centralwidget)
+        self.frame.setFrameShape(QtWidgets.QFrame.Box)
+        self.frame.setFrameShadow(QtWidgets.QFrame.Plain)
+        self.frame.setObjectName("frame")
+        self.horizontalLayout_2 = QtWidgets.QHBoxLayout(self.frame)
+        self.horizontalLayout_2.setContentsMargins(0, 0, 0, 0)
+        self.horizontalLayout_2.setSpacing(0)
+        self.horizontalLayout_2.setObjectName("horizontalLayout_2")
+        self.verticalLayout_4 = QtWidgets.QVBoxLayout()
+        self.verticalLayout_4.setContentsMargins(6, 6, 6, 6)
+        self.verticalLayout_4.setSpacing(12)
+        self.verticalLayout_4.setObjectName("verticalLayout_4")
+        self.label = QtWidgets.QLabel(self.frame)
+        font = QtGui.QFont()
+        font.setPointSize(12)
+        self.label.setFont(font)
+        self.label.setAlignment(QtCore.Qt.AlignCenter)
+        self.label.setObjectName("label")
+        self.verticalLayout_4.addWidget(self.label)
+        self.lw_1m_btn = QtWidgets.QPushButton(self.frame)
+        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Expanding)
+        sizePolicy.setHorizontalStretch(0)
+        sizePolicy.setVerticalStretch(0)
+        sizePolicy.setHeightForWidth(self.lw_1m_btn.sizePolicy().hasHeightForWidth())
+        self.lw_1m_btn.setSizePolicy(sizePolicy)
+        self.lw_1m_btn.setMinimumSize(QtCore.QSize(0, 25))
+        font = QtGui.QFont()
+        font.setPointSize(12)
+        self.lw_1m_btn.setFont(font)
+        self.lw_1m_btn.setObjectName("lw_1m_btn")
+        self.verticalLayout_4.addWidget(self.lw_1m_btn)
+        self.lw_2m_btn = QtWidgets.QPushButton(self.frame)
+        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Expanding)
+        sizePolicy.setHorizontalStretch(0)
+        sizePolicy.setVerticalStretch(0)
+        sizePolicy.setHeightForWidth(self.lw_2m_btn.sizePolicy().hasHeightForWidth())
+        self.lw_2m_btn.setSizePolicy(sizePolicy)
+        self.lw_2m_btn.setMinimumSize(QtCore.QSize(0, 25))
+        font = QtGui.QFont()
+        font.setPointSize(12)
+        self.lw_2m_btn.setFont(font)
+        self.lw_2m_btn.setObjectName("lw_2m_btn")
+        self.verticalLayout_4.addWidget(self.lw_2m_btn)
+        self.lw_3m_btn = QtWidgets.QPushButton(self.frame)
+        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Expanding)
+        sizePolicy.setHorizontalStretch(0)
+        sizePolicy.setVerticalStretch(0)
+        sizePolicy.setHeightForWidth(self.lw_3m_btn.sizePolicy().hasHeightForWidth())
+        self.lw_3m_btn.setSizePolicy(sizePolicy)
+        self.lw_3m_btn.setMinimumSize(QtCore.QSize(0, 25))
+        font = QtGui.QFont()
+        font.setPointSize(12)
+        self.lw_3m_btn.setFont(font)
+        self.lw_3m_btn.setObjectName("lw_3m_btn")
+        self.verticalLayout_4.addWidget(self.lw_3m_btn)
+        self.lw_safe_btn = QtWidgets.QPushButton(self.frame)
+        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Expanding)
+        sizePolicy.setHorizontalStretch(0)
+        sizePolicy.setVerticalStretch(0)
+        sizePolicy.setHeightForWidth(self.lw_safe_btn.sizePolicy().hasHeightForWidth())
+        self.lw_safe_btn.setSizePolicy(sizePolicy)
+        self.lw_safe_btn.setMinimumSize(QtCore.QSize(0, 25))
+        font = QtGui.QFont()
+        font.setPointSize(12)
+        self.lw_safe_btn.setFont(font)
+        self.lw_safe_btn.setObjectName("lw_safe_btn")
+        self.verticalLayout_4.addWidget(self.lw_safe_btn)
+        self.horizontalLayout_2.addLayout(self.verticalLayout_4)
+        self.horizontalLayout.addWidget(self.frame)
+        self.frame_2 = QtWidgets.QFrame(self.centralwidget)
+        self.frame_2.setFrameShape(QtWidgets.QFrame.Box)
+        self.frame_2.setFrameShadow(QtWidgets.QFrame.Plain)
+        self.frame_2.setObjectName("frame_2")
+        self.horizontalLayout_3 = QtWidgets.QHBoxLayout(self.frame_2)
+        self.horizontalLayout_3.setContentsMargins(0, 0, 0, 0)
+        self.horizontalLayout_3.setSpacing(0)
+        self.horizontalLayout_3.setObjectName("horizontalLayout_3")
+        self.verticalLayout_5 = QtWidgets.QVBoxLayout()
+        self.verticalLayout_5.setContentsMargins(6, 6, 6, 6)
+        self.verticalLayout_5.setSpacing(12)
+        self.verticalLayout_5.setObjectName("verticalLayout_5")
+        self.label_2 = QtWidgets.QLabel(self.frame_2)
+        font = QtGui.QFont()
+        font.setPointSize(12)
+        self.label_2.setFont(font)
+        self.label_2.setAlignment(QtCore.Qt.AlignCenter)
+        self.label_2.setObjectName("label_2")
+        self.verticalLayout_5.addWidget(self.label_2)
+        self.rw_1m_btn = QtWidgets.QPushButton(self.frame_2)
+        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Expanding)
+        sizePolicy.setHorizontalStretch(0)
+        sizePolicy.setVerticalStretch(0)
+        sizePolicy.setHeightForWidth(self.rw_1m_btn.sizePolicy().hasHeightForWidth())
+        self.rw_1m_btn.setSizePolicy(sizePolicy)
+        self.rw_1m_btn.setMinimumSize(QtCore.QSize(0, 25))
+        font = QtGui.QFont()
+        font.setPointSize(12)
+        self.rw_1m_btn.setFont(font)
+        self.rw_1m_btn.setObjectName("rw_1m_btn")
+        self.verticalLayout_5.addWidget(self.rw_1m_btn)
+        self.rw_2m_btn = QtWidgets.QPushButton(self.frame_2)
+        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Expanding)
+        sizePolicy.setHorizontalStretch(0)
+        sizePolicy.setVerticalStretch(0)
+        sizePolicy.setHeightForWidth(self.rw_2m_btn.sizePolicy().hasHeightForWidth())
+        self.rw_2m_btn.setSizePolicy(sizePolicy)
+        self.rw_2m_btn.setMinimumSize(QtCore.QSize(0, 25))
+        font = QtGui.QFont()
+        font.setPointSize(12)
+        self.rw_2m_btn.setFont(font)
+        self.rw_2m_btn.setObjectName("rw_2m_btn")
+        self.verticalLayout_5.addWidget(self.rw_2m_btn)
+        self.rw_3m_btn = QtWidgets.QPushButton(self.frame_2)
+        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Expanding)
+        sizePolicy.setHorizontalStretch(0)
+        sizePolicy.setVerticalStretch(0)
+        sizePolicy.setHeightForWidth(self.rw_3m_btn.sizePolicy().hasHeightForWidth())
+        self.rw_3m_btn.setSizePolicy(sizePolicy)
+        self.rw_3m_btn.setMinimumSize(QtCore.QSize(0, 25))
+        font = QtGui.QFont()
+        font.setPointSize(12)
+        self.rw_3m_btn.setFont(font)
+        self.rw_3m_btn.setObjectName("rw_3m_btn")
+        self.verticalLayout_5.addWidget(self.rw_3m_btn)
+        self.rw_safe_btn = QtWidgets.QPushButton(self.frame_2)
+        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Expanding)
+        sizePolicy.setHorizontalStretch(0)
+        sizePolicy.setVerticalStretch(0)
+        sizePolicy.setHeightForWidth(self.rw_safe_btn.sizePolicy().hasHeightForWidth())
+        self.rw_safe_btn.setSizePolicy(sizePolicy)
+        self.rw_safe_btn.setMinimumSize(QtCore.QSize(0, 25))
+        font = QtGui.QFont()
+        font.setPointSize(12)
+        self.rw_safe_btn.setFont(font)
+        self.rw_safe_btn.setObjectName("rw_safe_btn")
+        self.verticalLayout_5.addWidget(self.rw_safe_btn)
+        self.horizontalLayout_3.addLayout(self.verticalLayout_5)
+        self.horizontalLayout.addWidget(self.frame_2)
+        self.frame_3 = QtWidgets.QFrame(self.centralwidget)
+        self.frame_3.setFrameShape(QtWidgets.QFrame.Box)
+        self.frame_3.setFrameShadow(QtWidgets.QFrame.Plain)
+        self.frame_3.setObjectName("frame_3")
+        self.horizontalLayout_4 = QtWidgets.QHBoxLayout(self.frame_3)
+        self.horizontalLayout_4.setContentsMargins(0, 0, 0, 0)
+        self.horizontalLayout_4.setSpacing(0)
+        self.horizontalLayout_4.setObjectName("horizontalLayout_4")
+        self.verticalLayout_6 = QtWidgets.QVBoxLayout()
+        self.verticalLayout_6.setContentsMargins(6, 6, 6, 6)
+        self.verticalLayout_6.setSpacing(12)
+        self.verticalLayout_6.setObjectName("verticalLayout_6")
+        self.label_3 = QtWidgets.QLabel(self.frame_3)
+        font = QtGui.QFont()
+        font.setPointSize(12)
+        self.label_3.setFont(font)
+        self.label_3.setAlignment(QtCore.Qt.AlignCenter)
+        self.label_3.setObjectName("label_3")
+        self.verticalLayout_6.addWidget(self.label_3)
+        self.ls_1m_btn = QtWidgets.QPushButton(self.frame_3)
+        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Expanding)
+        sizePolicy.setHorizontalStretch(0)
+        sizePolicy.setVerticalStretch(0)
+        sizePolicy.setHeightForWidth(self.ls_1m_btn.sizePolicy().hasHeightForWidth())
+        self.ls_1m_btn.setSizePolicy(sizePolicy)
+        self.ls_1m_btn.setMinimumSize(QtCore.QSize(0, 25))
+        font = QtGui.QFont()
+        font.setPointSize(12)
+        self.ls_1m_btn.setFont(font)
+        self.ls_1m_btn.setObjectName("ls_1m_btn")
+        self.verticalLayout_6.addWidget(self.ls_1m_btn)
+        self.ls_2m_btn = QtWidgets.QPushButton(self.frame_3)
+        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Expanding)
+        sizePolicy.setHorizontalStretch(0)
+        sizePolicy.setVerticalStretch(0)
+        sizePolicy.setHeightForWidth(self.ls_2m_btn.sizePolicy().hasHeightForWidth())
+        self.ls_2m_btn.setSizePolicy(sizePolicy)
+        self.ls_2m_btn.setMinimumSize(QtCore.QSize(0, 25))
+        font = QtGui.QFont()
+        font.setPointSize(12)
+        self.ls_2m_btn.setFont(font)
+        self.ls_2m_btn.setObjectName("ls_2m_btn")
+        self.verticalLayout_6.addWidget(self.ls_2m_btn)
+        self.ls_3m_btn = QtWidgets.QPushButton(self.frame_3)
+        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Expanding)
+        sizePolicy.setHorizontalStretch(0)
+        sizePolicy.setVerticalStretch(0)
+        sizePolicy.setHeightForWidth(self.ls_3m_btn.sizePolicy().hasHeightForWidth())
+        self.ls_3m_btn.setSizePolicy(sizePolicy)
+        self.ls_3m_btn.setMinimumSize(QtCore.QSize(0, 25))
+        font = QtGui.QFont()
+        font.setPointSize(12)
+        self.ls_3m_btn.setFont(font)
+        self.ls_3m_btn.setObjectName("ls_3m_btn")
+        self.verticalLayout_6.addWidget(self.ls_3m_btn)
+        self.ls_safe_btn = QtWidgets.QPushButton(self.frame_3)
+        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Expanding)
+        sizePolicy.setHorizontalStretch(0)
+        sizePolicy.setVerticalStretch(0)
+        sizePolicy.setHeightForWidth(self.ls_safe_btn.sizePolicy().hasHeightForWidth())
+        self.ls_safe_btn.setSizePolicy(sizePolicy)
+        self.ls_safe_btn.setMinimumSize(QtCore.QSize(0, 25))
+        font = QtGui.QFont()
+        font.setPointSize(12)
+        self.ls_safe_btn.setFont(font)
+        self.ls_safe_btn.setObjectName("ls_safe_btn")
+        self.verticalLayout_6.addWidget(self.ls_safe_btn)
+        self.horizontalLayout_4.addLayout(self.verticalLayout_6)
+        self.horizontalLayout.addWidget(self.frame_3)
+        self.frame_4 = QtWidgets.QFrame(self.centralwidget)
+        self.frame_4.setFrameShape(QtWidgets.QFrame.Box)
+        self.frame_4.setFrameShadow(QtWidgets.QFrame.Plain)
+        self.frame_4.setObjectName("frame_4")
+        self.horizontalLayout_5 = QtWidgets.QHBoxLayout(self.frame_4)
+        self.horizontalLayout_5.setContentsMargins(0, 0, 0, 0)
+        self.horizontalLayout_5.setSpacing(0)
+        self.horizontalLayout_5.setObjectName("horizontalLayout_5")
+        self.verticalLayout_7 = QtWidgets.QVBoxLayout()
+        self.verticalLayout_7.setContentsMargins(6, 6, 6, 6)
+        self.verticalLayout_7.setSpacing(12)
+        self.verticalLayout_7.setObjectName("verticalLayout_7")
+        self.label_4 = QtWidgets.QLabel(self.frame_4)
+        font = QtGui.QFont()
+        font.setPointSize(12)
+        self.label_4.setFont(font)
+        self.label_4.setAlignment(QtCore.Qt.AlignCenter)
+        self.label_4.setObjectName("label_4")
+        self.verticalLayout_7.addWidget(self.label_4)
+        self.rs_1m_btn = QtWidgets.QPushButton(self.frame_4)
+        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Expanding)
+        sizePolicy.setHorizontalStretch(0)
+        sizePolicy.setVerticalStretch(0)
+        sizePolicy.setHeightForWidth(self.rs_1m_btn.sizePolicy().hasHeightForWidth())
+        self.rs_1m_btn.setSizePolicy(sizePolicy)
+        self.rs_1m_btn.setMinimumSize(QtCore.QSize(0, 25))
+        font = QtGui.QFont()
+        font.setPointSize(12)
+        self.rs_1m_btn.setFont(font)
+        self.rs_1m_btn.setObjectName("rs_1m_btn")
+        self.verticalLayout_7.addWidget(self.rs_1m_btn)
+        self.rs_2m_btn = QtWidgets.QPushButton(self.frame_4)
+        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Expanding)
+        sizePolicy.setHorizontalStretch(0)
+        sizePolicy.setVerticalStretch(0)
+        sizePolicy.setHeightForWidth(self.rs_2m_btn.sizePolicy().hasHeightForWidth())
+        self.rs_2m_btn.setSizePolicy(sizePolicy)
+        self.rs_2m_btn.setMinimumSize(QtCore.QSize(0, 25))
+        font = QtGui.QFont()
+        font.setPointSize(12)
+        self.rs_2m_btn.setFont(font)
+        self.rs_2m_btn.setObjectName("rs_2m_btn")
+        self.verticalLayout_7.addWidget(self.rs_2m_btn)
+        self.rs_3m_btn = QtWidgets.QPushButton(self.frame_4)
+        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Expanding)
+        sizePolicy.setHorizontalStretch(0)
+        sizePolicy.setVerticalStretch(0)
+        sizePolicy.setHeightForWidth(self.rs_3m_btn.sizePolicy().hasHeightForWidth())
+        self.rs_3m_btn.setSizePolicy(sizePolicy)
+        self.rs_3m_btn.setMinimumSize(QtCore.QSize(0, 25))
+        font = QtGui.QFont()
+        font.setPointSize(12)
+        self.rs_3m_btn.setFont(font)
+        self.rs_3m_btn.setObjectName("rs_3m_btn")
+        self.verticalLayout_7.addWidget(self.rs_3m_btn)
+        self.rs_safe_btn = QtWidgets.QPushButton(self.frame_4)
+        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Expanding)
+        sizePolicy.setHorizontalStretch(0)
+        sizePolicy.setVerticalStretch(0)
+        sizePolicy.setHeightForWidth(self.rs_safe_btn.sizePolicy().hasHeightForWidth())
+        self.rs_safe_btn.setSizePolicy(sizePolicy)
+        self.rs_safe_btn.setMinimumSize(QtCore.QSize(0, 25))
+        font = QtGui.QFont()
+        font.setPointSize(12)
+        self.rs_safe_btn.setFont(font)
+        self.rs_safe_btn.setObjectName("rs_safe_btn")
+        self.verticalLayout_7.addWidget(self.rs_safe_btn)
+        self.horizontalLayout_5.addLayout(self.verticalLayout_7)
+        self.horizontalLayout.addWidget(self.frame_4)
+        MainWindow.setCentralWidget(self.centralwidget)
+
+        self.retranslateUi(MainWindow)
+        QtCore.QMetaObject.connectSlotsByName(MainWindow)
+
+    def retranslateUi(self, MainWindow):
+        _translate = QtCore.QCoreApplication.translate
+        MainWindow.setWindowTitle(_translate("MainWindow", "MainWindow"))
+        self.label.setText(_translate("MainWindow", "Левое крыло"))
+        self.lw_1m_btn.setText(_translate("MainWindow", "1 метр"))
+        self.lw_2m_btn.setText(_translate("MainWindow", "2 метра"))
+        self.lw_3m_btn.setText(_translate("MainWindow", "3 метра"))
+        self.lw_safe_btn.setText(_translate("MainWindow", "Безопасное расстояние"))
+        self.label_2.setText(_translate("MainWindow", "Правое крыло"))
+        self.rw_1m_btn.setText(_translate("MainWindow", "1 метр"))
+        self.rw_2m_btn.setText(_translate("MainWindow", "2 метра"))
+        self.rw_3m_btn.setText(_translate("MainWindow", "3 метра"))
+        self.rw_safe_btn.setText(_translate("MainWindow", "Безопасное расстояние"))
+        self.label_3.setText(_translate("MainWindow", "Левый стабилизатор"))
+        self.ls_1m_btn.setText(_translate("MainWindow", "1 метр"))
+        self.ls_2m_btn.setText(_translate("MainWindow", "2 метра"))
+        self.ls_3m_btn.setText(_translate("MainWindow", "3 метра"))
+        self.ls_safe_btn.setText(_translate("MainWindow", "Безопасное расстояние"))
+        self.label_4.setText(_translate("MainWindow", "Правый стабилизатор"))
+        self.rs_1m_btn.setText(_translate("MainWindow", "1 метр"))
+        self.rs_2m_btn.setText(_translate("MainWindow", "2 метра"))
+        self.rs_3m_btn.setText(_translate("MainWindow", "3 метра"))
+        self.rs_safe_btn.setText(_translate("MainWindow", "Безопасное расстояние"))
+
+src/gui/test/test_main_window.py
+--------------------
+import unittest
+
+from PyQt5.QtWidgets import QApplication
+from ..main_window import MainWindow
+
+
+class TestMainWindow(unittest.TestCase):
+
+    def test_default(self):
+        app = QApplication([])
+        widget = MainWindow()
+        widget.show()
+        app.exec_()
+
+src/gui/test/__init__.py
+--------------------
+
+src/gui/main_window.py
+--------------------
+# Импортируем необходимые модули
+from servers.base_server import BaseServer
+from .ui_main_window import Ui_MainWindow
+
+from PyQt5.QtWidgets import QMainWindow, QPushButton
+
+# Определение констант для портов серверов
+LEFT_WING_PORT = 32105
+RIGHT_WING_PORT = LEFT_WING_PORT + 1
+LEFT_STABILIZER_PORT = RIGHT_WING_PORT + 1
+RIGHT_STABILIZER_PORT = LEFT_STABILIZER_PORT + 1
+
+# Определение констант для цветов кнопок
+M1_COLOR = "red"
+M2_COLOR = "orange"
+M3_COLOR = "yellow"
+SAFE_COLOR = "green"
+SAFE_TEXT_COLOR = "white"
+
+
+class MainWindow(QMainWindow):
+    def __init__(self):
+        # Инициализируем суперкласс
+        super(MainWindow, self).__init__()
+        # Инициализируем UI
+        self._ui = Ui_MainWindow()
+        self._ui.setupUi(self)
+        
+        # Инициализируем серверы
+        self.left_wing_server = BaseServer(LEFT_WING_PORT, "Левый сервер крыла")
+        self.right_wing_server = BaseServer(RIGHT_WING_PORT, "Правый сервер крыла")
+        self.left_stabilizer_server = BaseServer(LEFT_STABILIZER_PORT, "Левый сервер стабилизатора")
+        self.right_stabilizer_server = BaseServer(RIGHT_STABILIZER_PORT, "Правый сервер стабилизатора")
+        
+        # Запускаем потоки серверов
+        self.left_wing_server.start_server_thread()
+        self.right_wing_server.start_server_thread()
+        self.left_stabilizer_server.start_server_thread()
+        self.right_stabilizer_server.start_server_thread()
+
+        # Подключаем кнопки к их соответствующим функциям
+        self._ui.lw_1m_btn.clicked.connect(self.lw_1m_btn_clicked)
+        self._ui.lw_2m_btn.clicked.connect(self.lw_2m_btn_clicked)
+        self._ui.lw_3m_btn.clicked.connect(self.lw_3m_btn_clicked)
+        self._ui.lw_safe_btn.clicked.connect(self.lw_safe_btn_clicked)
+
+        self._ui.rw_1m_btn.clicked.connect(self.rw_1m_btn_clicked)
+        self._ui.rw_2m_btn.clicked.connect(self.rw_2m_btn_clicked)
+        self._ui.rw_3m_btn.clicked.connect(self.rw_3m_btn_clicked)
+        self._ui.rw_safe_btn.clicked.connect(self.rw_safe_btn_clicked)
+
+        self._ui.ls_1m_btn.clicked.connect(self.ls_1m_btn_clicked)
+        self._ui.ls_2m_btn.clicked.connect(self.ls_2m_btn_clicked)
+        self._ui.ls_3m_btn.clicked.connect(self.ls_3m_btn_clicked)
+        self._ui.ls_safe_btn.clicked.connect(self.ls_safe_btn_clicked)
+
+        self._ui.rs_1m_btn.clicked.connect(self.rs_1m_btn_clicked)
+        self._ui.rs_2m_btn.clicked.connect(self.rs_2m_btn_clicked)
+        self._ui.rs_3m_btn.clicked.connect(self.rs_3m_btn_clicked)
+        self._ui.rs_safe_btn.clicked.connect(self.rs_safe_btn_clicked)
+
+        # Инициализируем кнопки в безопасном состоянии
+        self.lw_safe_btn_clicked()
+        self.rw_safe_btn_clicked()
+        self.ls_safe_btn_clicked()
+        self.rs_safe_btn_clicked()
+
+    # Функция для установки цвета кнопки
+    def set_button_color(self, btn: QPushButton, color: str):
+        # Устанавливаем стиль кнопки для изменения ее цвета
+        btn.setStyleSheet(btn.styleSheet() + f"background-color: {color};")
+
+    # Функция для установки цвета текста кнопки
+    def set_button_text_color(self, btn: QPushButton, color: str):
+        # Устанавливаем стиль кнопки для изменения ее текстового цвета
+        btn.setStyleSheet(btn.styleSheet() + f"color: {color};")
+
+    # Функция для очистки цветов кнопок правого крыла
+    def rw_clear_colors(self):
+        # Сбрасываем стили кнопок правого крыла
+        self._ui.rw_1m_btn.setStyleSheet(None)
+        self._ui.rw_2m_btn.setStyleSheet(None)
+        self._ui.rw_3m_btn.setStyleSheet(None)
+        self._ui.rw_safe_btn.setStyleSheet(None)
+
+    # Функция для очистки цветов кнопок левого крыла
+    def lw_clear_colors(self):
+        # Сбрасываем стили кнопок левого крыла
+        self._ui.lw_1m_btn.setStyleSheet(None)
+        self._ui.lw_2m_btn.setStyleSheet(None)
+        self._ui.lw_3m_btn.setStyleSheet(None)
+        self._ui.lw_safe_btn.setStyleSheet(None)
+
+    # Функция для очистки цветов кнопок правого стабилизатора
+    def rs_clear_colors(self):
+        # Сбрасываем стили кнопок правого стабилизатора
+        self._ui.rs_1m_btn.setStyleSheet(None)
+        self._ui.rs_2m_btn.setStyleSheet(None)
+        self._ui.rs_3m_btn.setStyleSheet(None)
+        self._ui.rs_safe_btn.setStyleSheet(None)
+
+    # Функция для очистки цветов кнопок левого стабилизатора
+    def ls_clear_colors(self):
+        # Сбрасываем стили кнопок левого стабилизатора
+        self._ui.ls_1m_btn.setStyleSheet(None)
+        self._ui.ls_2m_btn.setStyleSheet(None)
+        self._ui.ls_3m_btn.setStyleSheet(None)
+        self._ui.ls_safe_btn.setStyleSheet(None)
+
+    # Функции для кнопок левого крыла
+    def lw_1m_btn_clicked(self):
+        # Устанавливаем расстояние в 1 метр и обновляем UI
+        self.left_wing_server.set_distance(1)
+        self.lw_clear_colors()
+        self.set_button_color(self._ui.lw_1m_btn, M1_COLOR)
+        self.update()
+
+    def lw_2m_btn_clicked(self):
+        # Устанавливаем расстояние в 2 метра и обновляем UI
+        self.left_wing_server.set_distance(2)
+        self.lw_clear_colors()
+        self.set_button_color(self._ui.lw_2m_btn, M2_COLOR)
+        self.update()
+
+    def lw_3m_btn_clicked(self):
+        # Устанавливаем расстояние в 3 метра и обновляем UI
+        self.left_wing_server.set_distance(3)
+        self.lw_clear_colors()
+        self.set_button_color(self._ui.lw_3m_btn, M3_COLOR)
+        self.update()
+
+    def lw_safe_btn_clicked(self):
+        # Устанавливаем расстояние в безопасное и обновляем UI
+        self.left_wing_server.set_distance(100)
+        self.lw_clear_colors()
+        self.set_button_color(self._ui.lw_safe_btn, SAFE_COLOR)
+        self.set_button_text_color(self._ui.lw_safe_btn, SAFE_TEXT_COLOR)
+        self.update()
+
+    # Функции для кнопок правого крыла
+    def rw_1m_btn_clicked(self):
+        # Устанавливаем расстояние в 1 метр и обновляем UI
+        self.right_wing_server.set_distance(1)
+        self.rw_clear_colors()
+        self.set_button_color(self._ui.rw_1m_btn, M1_COLOR)
+        self.update()
+
+    def rw_2m_btn_clicked(self):
+        # Устанавливаем расстояние в 2 метра и обновляем UI
+        self.right_wing_server.set_distance(2)
+        self.rw_clear_colors()
+        self.set_button_color(self._ui.rw_2m_btn, M2_COLOR)
+        self.update()
+
+    def rw_3m_btn_clicked(self):
+        # Устанавливаем расстояние в 3 метра и обновляем UI
+        self.right_wing_server.set_distance(3)
+        self.rw_clear_colors()
+        self.set_button_color(self._ui.rw_3m_btn, M3_COLOR)
+        self.update()
+
+    def rw_safe_btn_clicked(self):
+        # Устанавливаем расстояние в безопасное и обновляем UI
+        self.right_wing_server.set_distance(100)
+        self.rw_clear_colors()
+        self.set_button_color(self._ui.rw_safe_btn, SAFE_COLOR)
+        self.set_button_text_color(self._ui.rw_safe_btn, SAFE_TEXT_COLOR)
+        self.update()
+
+    # Функции для кнопок левого стабилизатора
+    def ls_1m_btn_clicked(self):
+        # Устанавливаем расстояние в 1 метр и обновляем UI
+        self.left_stabilizer_server.set_distance(1)
+        self.ls_clear_colors()
+        self.set_button_color(self._ui.ls_1m_btn, M1_COLOR)
+        self.update()
+
+    def ls_2m_btn_clicked(self):
+        # Устанавливаем расстояние в 2 метра и обновляем UI
+        self.left_stabilizer_server.set_distance(2)
+        self.ls_clear_colors()
+        self.set_button_color(self._ui.ls_2m_btn, M2_COLOR)
+        self.update()
+
+    def ls_3m_btn_clicked(self):
+        # Устанавливаем расстояние в 3 метра и обновляем UI
+        self.left_stabilizer_server.set_distance(3)
+        self.ls_clear_colors()
+        self.set_button_color(self._ui.ls_3m_btn, M3_COLOR)
+        self.update()
+
+    def ls_safe_btn_clicked(self):
+        # Устанавливаем расстояние в безопасное и обновляем UI
+        self.left_stabilizer_server.set_distance(100)
+        self.ls_clear_colors()
+        self.set_button_color(self._ui.ls_safe_btn, SAFE_COLOR)
+        self.set_button_text_color(self._ui.ls_safe_btn, SAFE_TEXT_COLOR)
+        self.update()
+
+    # Функции для кнопок правого стабилизатора
+    def rs_1m_btn_clicked(self):
+        # Устанавливаем расстояние в 1 метр и обновляем UI
+        self.right_stabilizer_server.set_distance(1)
+        self.rs_clear_colors()
+        self.set_button_color(self._ui.rs_1m_btn, M1_COLOR)
+        self.update()
+
+    def rs_2m_btn_clicked(self):
+        # Устанавливаем расстояние в 2 метра и обновляем UI
+        self.right_stabilizer_server.set_distance(2)
+        self.rs_clear_colors()
+        self.set_button_color(self._ui.rs_2m_btn, M2_COLOR)
+        self.update()
+
+    def rs_3m_btn_clicked(self):
+        # Устанавливаем расстояние в 3 метра и обновляем UI
+        self.right_stabilizer_server.set_distance(3)
+        self.rs_clear_colors()
+        self.set_button_color(self._ui.rs_3m_btn, M3_COLOR)
+        self.update()
+
+    def rs_safe_btn_clicked(self):
+        # Устанавливаем расстояние в безопасное и обновляем UI
+        self.right_stabilizer_server.set_distance(100)
+        self.rs_clear_colors()
+        self.set_button_color(self._ui.rs_safe_btn, SAFE_COLOR)
+        self.set_button_text_color(self._ui.rs_safe_btn, SAFE_TEXT_COLOR)
+        self.update()
+

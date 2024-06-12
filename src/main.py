@@ -1,22 +1,22 @@
-# Import necessary modules
+# Импорт необходимых модулей
 import multiprocessing
 from PyQt5.QtWidgets import QApplication
 from gui.main_window import MainWindow
 
-# Define the main function
+# Определение основной функции
 def main():
-    # Freeze support for multiprocessing
+    # Поддержка заморозки для многопроцессорности
     multiprocessing.freeze_support()
-    # Create a new application
+    # Создание нового приложения
     app = QApplication([])
-    # Create a new main window
+    # Создание нового главного окна
     widget = MainWindow()
-    # Show the main window
+    # Показать главное окно
     widget.show()
-    # Execute the application
+    # Выполнить приложение
     app.exec_()
 
-# Check if the script is being run directly
+# Проверка, запущен ли скрипт непосредственно
 if __name__ == "__main__":
-    # Call the main function
+    # Вызов основной функции
     main()
